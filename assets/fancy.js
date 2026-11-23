@@ -26,6 +26,17 @@ var Z_MID=[0x0315,0x031B,0x0340,0x0341,0x0358,0x0321,0x0322,0x0327,0x0328,0x0334
 var Z_DOWN=[0x0316,0x0317,0x0318,0x0319,0x031C,0x031D,0x031E,0x031F,0x0320,0x0324,0x0325,0x0326,0x0329,0x032A,0x032B,0x032C,0x032D,0x032E,0x032F,0x0330,0x0331,0x0332,0x0333,0x0339,0x033A,0x033B,0x033C,0x0345,0x0347,0x0348,0x0349,0x034D,0x034E,0x0353,0x0354,0x0355,0x0356,0x0359,0x035A,0x0323];
 function pick(arr,n){var out="";for(var i=0;i<n;i++){out+=String.fromCodePoint(arr[Math.floor(Math.random()*arr.length)]);}return out;}
 function zalgo(level){var n=level===3?8:level===2?4:2;return function(text){return Array.from(text).map(function(c){if(c===" ")return c;return c+pick(Z_UP,n)+pick(Z_MID,level===3?2:1)+pick(Z_DOWN,n);}).join("");};}
+function upMap(base){return function(ch){var c=ch.codePointAt(0);if(c>=65&&c<=90)return String.fromCodePoint(base+c-65);if(c>=97&&c<=122)return String.fromCodePoint(base+c-97);return ch;};}
+var squaredFn=upMap(0x1F130),negsquaredFn=upMap(0x1F170),negcircledFn=upMap(0x1F150);
+function parenFn(ch){var c=ch.codePointAt(0),l=-1;
+if(c>=97&&c<=122)l=c-97;else if(c>=65&&c<=90)l=c-65;
+if(l>=0)return String.fromCodePoint(0x249C+l);
+if(c>=49&&c<=57)return String.fromCodePoint(0x2474+c-49);
+return ch;}
+var SUPER={a:"ᵃ",b:"ᵇ",c:"ᶜ",d:"ᵈ",e:"ᵉ",f:"ᶠ",g:"ᵍ",h:"ʰ",i:"ⁱ",j:"ʲ",k:"ᵏ",l:"ˡ",m:"ᵐ",n:"ⁿ",o:"ᵒ",p:"ᵖ",r:"ʳ",s:"ˢ",t:"ᵗ",u:"ᵘ",v:"ᵛ",w:"ʷ",x:"ˣ",y:"ʸ",z:"ᶻ","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","+":"⁺","-":"⁻","(":"⁽",")":"⁾"};
+var SUB={a:"ₐ",e:"ₑ",h:"ₕ",i:"ᵢ",j:"ⱼ",k:"ₖ",l:"ₗ",m:"ₘ",n:"ₙ",o:"ₒ",p:"ₚ",r:"ᵣ",s:"ₛ",t:"ₜ",u:"ᵤ",v:"ᵥ",x:"ₓ","0":"₀","1":"₁","2":"₂","3":"₃","4":"₄","5":"₅","6":"₆","7":"₇","8":"₈","9":"₉","+":"₊","-":"₋","(":"₍",")":"₎"};
+function superFn(ch){return SUPER[ch]||ch;}
+function subFn(ch){return SUB[ch]||ch;}
 var STYLES={
 bold:{name:"Bold",map:alpha(0x1D400,0x1D41A,0x1D7CE)},
 italic:{name:"Italic",map:alpha(0x1D434,0x1D44E,null,null,{104:0x210E})},
@@ -47,6 +58,13 @@ flip:{name:"Upside Down",fn:flip},
 strike:{name:"Strikethrough",fn:combiner(0x0336)},
 underline:{name:"Underline",fn:combiner(0x0332)},
 slash:{name:"Slash",fn:combiner(0x0337)},
+tilde:{name:"Tilde Strike",fn:combiner(0x0334)},
+squared:{name:"Squared",map:squaredFn},
+negsquared:{name:"Negative Squared",map:negsquaredFn},
+negcircled:{name:"Negative Circled",map:negcircledFn},
+paren:{name:"Parenthesized",map:parenFn},
+superscript:{name:"Superscript",map:superFn},
+subscript:{name:"Subscript",map:subFn},
 zalgo1:{name:"Glitch (Light)",fn:zalgo(1)},
 zalgo2:{name:"Glitch (Medium)",fn:zalgo(2)},
 zalgo3:{name:"Glitch (Extreme)",fn:zalgo(3)}
